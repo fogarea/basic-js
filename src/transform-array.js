@@ -19,11 +19,11 @@ function transform(arr) {
   if(!(arr instanceof Array)) throw Error('\'arr\' parameter must be an instance of the Array!');
   if(arr.length === 0) return [];
     let transformCommands = {
-      '--discard-next'(acc, currentIndex, ar) {
-        if(currentIndex !== ar.length - 1){
+      '--discard-next'(acc, currentIndex, arr) {
+        if(currentIndex !== arr.length - 1){
           acc.splice(currentIndex, 1);
-          ar.splice(currentIndex, 1);
-          ar.splice(currentIndex + 1, 1);
+          arr.splice(currentIndex, 1);
+          arr.splice(currentIndex + 1, 1);
         } else {
           acc.pop();
         }
@@ -34,7 +34,7 @@ function transform(arr) {
         return acc;
       },
       '--double-next'(acc, currentIndex, ar) {
-        currentIndex !== ar.length - 1 ? acc[currentIndex] = ar[currentIndex + 1] : acc.pop();
+        currentIndex !== arr.length - 1 ? acc[currentIndex] = ar[currentIndex + 1] : acc.pop();
         return acc;
       },
       '--double-prev'(acc, currentIndex) {
@@ -45,16 +45,14 @@ function transform(arr) {
       }
     }
 
-    let ar = [...arr]
-
-    return ar.reduce((acc, currentValue, currentIndex) => {
+    return arr.reduce((acc, currentValue, currentIndex) => {
       if(typeof currentValue === 'number'){
         acc.push(currentValue);
         return acc;
       } else {
         acc.push(currentValue);
-        if(currentValue === `--discard-next` || currentValue === `--discard-prev` || currentValue === `--double-next` || currentValue === `--double-prev`){
-          acc = transformCommands[currentValue](acc, currentIndex, ar);
+        if(transformCommands[currentValue]){
+          acc = transformCommands[currentValue](acc, currentIndex, arr);
         }
         return acc;
       }
