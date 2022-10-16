@@ -23,9 +23,35 @@ const { NotImplementedError } = require('../extensions/index.js');
  *  [1, 1, 1]
  * ]
  */
-function minesweeper(/* matrix */) {
-  throw new NotImplementedError('Not implemented');
-  // remove line with error and write your code here
+function minesweeper(matrix) {
+  const getCopyDimensionalArray = (array) => {
+    return array.map(arrItem => {
+      return Array.isArray(arrItem) && getCopyDimensionalArray(arrItem);
+    })
+  }
+  const mineSweeperGrid = getCopyDimensionalArray(matrix);
+
+  for (let i in matrix) {
+    for (let j in matrix[0]) {
+      let indexI = parseInt(i);
+      let indexJ = parseInt(j);
+      const step = 1;
+      let minesInCellsAroundCounter = 0;
+      const counter = (sign) => {
+        matrix[eval(`${indexI}${sign}${step}`)][indexJ-step] ? minesInCellsAroundCounter += 1 : (
+            matrix[eval(`${indexI}${sign}${step}`)][indexJ] ? minesInCellsAroundCounter += 1 : (
+                matrix[eval(`${indexI}${sign}${step}`)][indexJ+step] ? minesInCellsAroundCounter += 1 : minesInCellsAroundCounter
+            )
+        )
+      }
+      indexI > 0 ? counter('-') : minesInCellsAroundCounter;
+      indexI < (matrix.length - 1) ? counter('+') : minesInCellsAroundCounter;
+      matrix[indexI][indexJ-step] ? minesInCellsAroundCounter += 1 : (matrix[indexI][indexJ+step] ? minesInCellsAroundCounter += 1 : minesInCellsAroundCounter);
+      mineSweeperGrid[i][j] = minesInCellsAroundCounter;
+    }
+  }
+
+  return mineSweeperGrid;
 }
 
 module.exports = {
